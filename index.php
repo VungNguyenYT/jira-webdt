@@ -28,7 +28,7 @@ $result = $conn->query($sql);
                         <?php echo number_format($row['price'], 0, ',', '.'); ?>đ
                     <?php endif; ?>
                 </p>
-                <button onclick="window.location.href='add_to_cart.php?product_id=<?php echo $row['id']; ?>'" style="background-color: #007bff; color: #fff; border: none; padding: 12px 25px; border-radius: 5px; cursor: pointer; font-size: 1em; transition: background-color 0.3s ease, transform 0.2s ease;">Thêm vào giỏ</button>
+                <a href="add_to_cart.php?product_id=<?php echo $row['id']; ?>" style="display: inline-block; background-color: #007bff; color: #fff; text-decoration: none; padding: 12px 25px; border-radius: 5px; font-size: 1em; transition: background-color 0.3s ease;">Thêm vào giỏ</a>
             </div>
             <?php
         }
