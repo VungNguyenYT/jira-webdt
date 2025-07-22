@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th7 07, 2025 lúc 09:53 PM
+-- Thời gian đã tạo: Th7 22, 2025 lúc 11:59 AM
 -- Phiên bản máy phục vụ: 10.4.27-MariaDB
 -- Phiên bản PHP: 7.4.33
 
@@ -259,7 +259,9 @@ INSERT INTO `users` (`id`, `username`, `password`, `email`, `full_name`, `phone_
 (1, 'admin_user', '$2y$10$wTf2tQxWf.q2H4D0F8L.UOu.V/xZ6d5hJ7B8I9K0L1M2N3O4P5Q6R7S8T9U0V1W2X3Y4Z5', 'admin@example.com', 'Admin Website', '0901234567', '123 Đường ABC, Quận 1, TP.HCM', 'admin', '2025-07-08 00:55:03', '2025-07-08 00:55:03'),
 (2, 'nguyenvanhieu', '$2y$10$wTf2tQxWf.q2H4D0F8L.UOu.V/xZ6d5hJ7B8I9K0L1M2N3O4P5Q6R7S8T9U0V1W2X3Y4Z5', 'hieu.nv@example.com', 'Nguyễn Văn Hiếu', '0912345678', '456 Đường XYZ, Quận 3, TP.HCM', 'customer', '2025-07-08 00:55:03', '2025-07-08 00:55:03'),
 (3, 'phamthihuong', '$2y$10$wTf2tQxWf.q2H4D0F8L.UOu.V/xZ6d5hJ7B8I9K0L1M2N3O4P5Q6R7S8T9U0V1W2X3Y4Z5', 'huong.pt@example.com', 'Phạm Thị Hương', '0987654321', '789 Lê Lợi, Quận 5, TP.HCM', 'customer', '2025-07-08 00:55:03', '2025-07-08 00:55:03'),
-(4, 'admin', '$2y$10$sjO04dzkJIDhd83txf.zDOavKSAJMNh6WDSdhTxowAKMeg1JjlYiW', '123@gmail.com', 'admin', '123456', '123a', 'admin', '2025-07-08 02:16:41', '2025-07-08 02:18:35');
+(4, 'admin', '$2y$10$sjO04dzkJIDhd83txf.zDOavKSAJMNh6WDSdhTxowAKMeg1JjlYiW', '123@gmail.com', 'admin', '123456', '123a', 'admin', '2025-07-08 02:16:41', '2025-07-08 02:18:35'),
+(5, 'VungNguyenYT', '$2y$10$v2MsIFf.9vBxOWZ6IOIhy.lxSVxgSz/n8FVg94sNkT3YQ79ubRrFG', 'nguyenvanvung252@gmail.com', 'Nguyễn Văn Vửng', '0347482012', 'Ấp Phú lân, Song Lộc, Châu Thành, Trà Vinh', 'admin', '2025-07-22 14:44:43', '2025-07-22 14:45:37'),
+(6, 'Vung1', '$2y$10$7AzTDLu/z7C85CB3dg9n0e3vf9pAXepNoUPGLDdmcZ3924Uxp8W8G', 'aaa@gmail.com', 'Nguyễn Văn Zửng', '0347482012', 'Trà Vinh', 'customer', '2025-07-22 16:55:51', '2025-07-22 16:55:51');
 
 -- --------------------------------------------------------
 
@@ -449,7 +451,7 @@ ALTER TABLE `reviews`
 -- AUTO_INCREMENT cho bảng `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- Các ràng buộc cho các bảng đã đổ
