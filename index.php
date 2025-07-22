@@ -24,7 +24,8 @@ $result = $conn->query($sql);
                         style="max-width: 100%; height: 220px; object-fit: contain; margin-bottom: 15px;">
                     <h3
                         style="font-size: 1.3em; margin: 10px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: center; color: #343a40;">
-                        <?php echo htmlspecialchars($row['name']); ?></h3>
+                        <?php echo htmlspecialchars($row['name']); ?>
+                    </h3>
                 </a>
                 <p style="font-size: 1.2em; color: #dc3545; font-weight: bold; margin-bottom: 15px;">
                     <?php if ($row['sale_price'] !== NULL && $row['sale_price'] < $row['price']): ?>
