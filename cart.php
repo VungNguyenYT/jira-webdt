@@ -35,6 +35,10 @@ require_once 'includes/header.php';
             </tr>
         </tfoot>
     </table>
+    <div style="text-align: right; margin-top: 20px;">
+    <a href="checkout.php" style="background-color: #28a745; color: white; padding: 12px 20px; border-radius: 6px; font-size: 16px; text-decoration: none; display: inline-block; transition: background-color 0.3s ease;">Tiến hành thanh toán</a>
+</div>
+
 <?php else: ?>
     <p style="text-align: center; color: #777;">Giỏ hàng của bạn đang trống. <a href="index.php" style="color: #007bff;">Tiếp tục mua sắm</a>.</p>
 <?php endif; ?>
