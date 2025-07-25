@@ -45,21 +45,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </tr>
             </thead>
             <tbody>
-                <?php $total = 0; foreach ($_SESSION['cart'] as $id => $item): 
+                <?php $total = 0;
+                foreach ($_SESSION['cart'] as $id => $item):
                     $subtotal = $item['price'] * $item['quantity'];
                     $total += $subtotal;
-                ?>
-                <tr>
-                    <td style="padding: 10px;"><?php echo htmlspecialchars($item['name']); ?></td>
-                    <td style="padding: 10px;"><?php echo number_format($item['price'], 0, ',', '.') ?>đ</td>
-                    <td style="padding: 10px;">
-                        <input type="number" name="quantity[<?php echo $id ?>]" value="<?php echo $item['quantity'] ?>" min="0" style="width: 60px; padding: 6px; text-align: center;">
-                    </td>
-                    <td style="padding: 10px;"><?php echo number_format($subtotal, 0, ',', '.') ?>đ</td>
-                    <td style="padding: 10px;">
-                        <button type="submit" name="remove_item" value="<?php echo $id ?>" style="background-color: red; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer;">X</button>
-                    </td>
-                </tr>
+                    ?>
+                    <tr>
+                        <td style="padding: 10px;"><?php echo htmlspecialchars($item['name']); ?></td>
+                        <td style="padding: 10px;"><?php echo number_format($item['price'], 0, ',', '.') ?>đ</td>
+                        <td style="padding: 10px;">
+                            <input type="number" name="quantity[<?php echo $id ?>]" value="<?php echo $item['quantity'] ?>"
+                                min="0" style="width: 60px; padding: 6px; text-align: center;">
+                        </td>
+                        <td style="padding: 10px;"><?php echo number_format($subtotal, 0, ',', '.') ?>đ</td>
+                        <td style="padding: 10px;">
+                            <button type="submit" name="remove_item" value="<?php echo $id ?>"
+                                style="background-color: red; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer;">X</button>
+                        </td>
+                    </tr>
                 <?php endforeach; ?>
             </tbody>
             <tfoot>
@@ -72,13 +75,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </table>
 
         <div style="margin-top: 20px; text-align: right;">
-            <button type="submit" name="update_cart" style="background-color: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 6px; font-size: 15px; cursor: pointer;">Cập nhật giỏ hàng</button>
-            <a href="checkout.php" style="margin-left: 10px; background-color: #28a745; color: white; padding: 10px 20px; border-radius: 6px; font-size: 15px; text-decoration: none;">Tiến hành thanh toán</a>
+            <button type="submit" name="update_cart"
+                style="background-color: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 6px; font-size: 15px; cursor: pointer;">Cập
+                nhật giỏ hàng</button>
+            <a href="checkout.php"
+                style="margin-left: 10px; background-color: #28a745; color: white; padding: 10px 20px; border-radius: 6px; font-size: 15px; text-decoration: none;">Tiến
+                hành thanh toán</a>
         </div>
     </form>
 
 <?php else: ?>
-    <p style="text-align: center; color: #777;">Giỏ hàng của bạn đang trống. <a href="index.php" style="color: #007bff;">Tiếp tục mua sắm</a>.</p>
+    <p style="text-align: center; color: #777;">Giỏ hàng của bạn đang trống. <a href="index.php"
+            style="color: #007bff;">Tiếp tục mua sắm</a>.</p>
 <?php endif; ?>
 
 <?php
