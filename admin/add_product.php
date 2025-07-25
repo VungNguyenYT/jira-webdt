@@ -49,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         // Định nghĩa thư mục đích để lưu ảnh.
         // Từ admin/add_product.php, để vào thư mục uploads/ (ngang hàng với admin/), ta cần lùi 1 cấp: ../uploads/
         $target_dir = "../uploads/";
-        
+
         // Tạo tên file duy nhất để tránh trùng lặp khi nhiều người upload ảnh cùng tên
         // uniqid() tạo một ID duy nhất dựa trên thời gian hiện tại
         // basename() lấy tên file gốc từ đường dẫn đầy đủ của file được upload
@@ -61,7 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         // Kiểm tra xem file tải lên có thực sự là một hình ảnh hợp lệ không
         $check = getimagesize($_FILES["image"]["tmp_name"]);
-        if($check !== false) { // Nếu getimagesize trả về false, đó không phải là ảnh
+        if ($check !== false) { // Nếu getimagesize trả về false, đó không phải là ảnh
             // Kiểm tra kích thước file (ví dụ: giới hạn 5MB)
             if ($_FILES["image"]["size"] > 5000000) {
                 $_SESSION['message'] = ['type' => 'error', 'text' => "Lỗi: Kích thước file ảnh quá lớn (tối đa 5MB)."];
@@ -71,8 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             elseif (!in_array($imageFileType, ['jpg', 'png', 'jpeg', 'gif'])) {
                 $_SESSION['message'] = ['type' => 'error', 'text' => "Lỗi: Chỉ cho phép định dạng JPG, JPEG, PNG & GIF."];
                 $form_valid = false;
-            }
-            else {
+            } else {
                 // Di chuyển file từ thư mục tạm thời của PHP sang thư mục đích trên máy chủ
                 if (move_uploaded_file($_FILES["image"]["tmp_name"], $target_file)) {
                     // Nếu thành công, lưu đường dẫn tương đối của ảnh vào biến $image_url
@@ -122,13 +121,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if ($stmt->execute()) {
             $_SESSION['message'] = ['type' => 'success', 'text' => "Sản phẩm **" . htmlspecialchars($name) . "** đã được thêm thành công!"];
             // Xóa dữ liệu POST để làm trống form sau khi thêm thành công, tránh việc gửi lại form khi refresh
-            $_POST = array(); 
+            $_POST = array();
         } else {
             $_SESSION['message'] = ['type' => 'error', 'text' => "Lỗi khi thêm sản phẩm vào CSDL: " . $stmt->error];
         }
         $stmt->close(); // Đóng statement
     }
-    
+
     // Luôn chuyển hướng sau khi xử lý POST để ngăn chặn lỗi gửi lại form (resubmission) khi refresh
     header("Location: add_product.php");
     exit(); // Dừng script sau khi chuyển hướng
@@ -143,7 +142,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <form action="add_product.php" method="POST" enctype="multipart/form-data">
         <div class="form-group">
             <label for="name">Tên sản phẩm (<span style="color: red;">*</span>):</label>
-            <input type="text" id="name" name="name" required value="<?php echo htmlspecialchars($_POST['name'] ?? ''); ?>">
+            <input type="text" id="name" name="name" required
+                value="<?php echo htmlspecialchars($_POST['name'] ?? ''); ?>">
         </div>
         <div class="form-group">
             <label for="slug">Slug (URL thân thiện - để trống để tự tạo):</label>
@@ -173,23 +173,28 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </div>
         <div class="form-group">
             <label for="short_description">Mô tả ngắn:</label>
-            <textarea id="short_description" name="short_description" rows="3"><?php echo htmlspecialchars($_POST['short_description'] ?? ''); ?></textarea>
+            <textarea id="short_description" name="short_description"
+                rows="3"><?php echo htmlspecialchars($_POST['short_description'] ?? ''); ?></textarea>
         </div>
         <div class="form-group">
             <label for="description">Mô tả chi tiết:</label>
-            <textarea id="description" name="description" rows="6"><?php echo htmlspecialchars($_POST['description'] ?? ''); ?></textarea>
+            <textarea id="description" name="description"
+                rows="6"><?php echo htmlspecialchars($_POST['description'] ?? ''); ?></textarea>
         </div>
         <div class="form-group">
             <label for="price">Giá bán (<span style="color: red;">*</span>):</label>
-            <input type="number" id="price" name="price" step="0.01" min="0" required value="<?php echo htmlspecialchars($_POST['price'] ?? ''); ?>">
+            <input type="number" id="price" name="price" step="0.01" min="0" required
+                value="<?php echo htmlspecialchars($_POST['price'] ?? ''); ?>">
         </div>
         <div class="form-group">
             <label for="sale_price">Giá khuyến mãi (để trống nếu không có):</label>
-            <input type="number" id="sale_price" name="sale_price" step="0.01" min="0" value="<?php echo htmlspecialchars($_POST['sale_price'] ?? ''); ?>">
+            <input type="number" id="sale_price" name="sale_price" step="0.01" min="0"
+                value="<?php echo htmlspecialchars($_POST['sale_price'] ?? ''); ?>">
         </div>
         <div class="form-group">
             <label for="stock_quantity">Số lượng tồn kho (<span style="color: red;">*</span>):</label>
-            <input type="number" id="stock_quantity" name="stock_quantity" min="0" required value="<?php echo htmlspecialchars($_POST['stock_quantity'] ?? ''); ?>">
+            <input type="number" id="stock_quantity" name="stock_quantity" min="0" required
+                value="<?php echo htmlspecialchars($_POST['stock_quantity'] ?? ''); ?>">
         </div>
         <div class="form-group">
             <label for="image">Ảnh sản phẩm:</label>
@@ -226,7 +231,7 @@ $conn->close(); // Đóng kết nối CSDL
         border: 1px solid #ddd;
         padding: 30px;
         border-radius: 8px;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
         margin: 0 auto;
     }
 
