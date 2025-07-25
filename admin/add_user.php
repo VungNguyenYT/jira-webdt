@@ -1,25 +1,22 @@
 <?php
 session_start();
-include '../includes/db.php';
+require_once '../includes/db.php';
 
-// Kiểm tra nếu chưa đăng nhập admin thì chuyển hướng
-if (!isset($_SESSION['admin_logged_in'])) {
-    header("Location: login.php");
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
+    header("Location: ../login.php");
     exit();
 }
 
-// Xử lý khi submit form thêm người dùng
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $name = trim($_POST['name'] ?? '');
-    $email = trim($_POST['email'] ?? '');
-    $username = trim($_POST['username'] ?? '');
-    $password = $_POST['password'] ?? '';
+    $username = trim($_POST['username']);
+    $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+    $full_name = $_POST['full_name'];
+    $email = $_POST['email'];
+    $role = $_POST['role'];
+    $status = $_POST['status'];
 
-    // Hash mật khẩu
-    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-
-    $stmt = $conn->prepare("INSERT INTO users (name, email, username, password, role) VALUES (?, ?, ?, ?, 'user')");
-    $stmt->bind_param("ssss", $name, $email, $username, $hashed_password);
+    $stmt = $conn->prepare("INSERT INTO users (username, password, full_name, email, role, status, created_at) VALUES (?, ?, ?, ?, ?, ?, NOW())");
+    $stmt->bind_param("ssssss", $username, $password, $full_name, $email, $role, $status);
     $stmt->execute();
 
     header("Location: manage_users.php");
@@ -29,80 +26,49 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <title>Thêm người dùng</title>
-    <style>
-        body {
-            font-family: Arial;
-            background-color: #f2f2f2;
-            padding: 40px;
-        }
-        h2 {
-            color: #333;
-        }
-        form {
-            background-color: #fff;
-            padding: 25px;
-            border-radius: 8px;
-            max-width: 450px;
-            margin: auto;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-        }
-        label {
-            display: block;
-            margin-top: 12px;
-            font-weight: bold;
-        }
-        input[type="text"], input[type="email"], input[type="password"] {
-            width: 100%;
-            padding: 8px;
-            margin-top: 6px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-        button {
-            margin-top: 16px;
-            padding: 10px 18px;
-            background-color: #28a745;
-            border: none;
-            color: white;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-        button:hover {
-            background-color: #218838;
-        }
-        a.back-link {
-            display: block;
-            margin-top: 20px;
-            text-align: center;
-            color: #333;
-            text-decoration: none;
-        }
-    </style>
 </head>
-<body>
 
-<h2>➕ Thêm người dùng mới</h2>
+<body style="font-family: sans-serif; background-color: #f9f9f9; padding: 40px;">
+    <div
+        style="max-width: 600px; margin: auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 0 10px #ccc;">
+        <h2 style="text-align: center;">➕ Thêm người dùng mới</h2>
+        <form method="POST">
+            <label>Tên đăng nhập:</label>
+            <input type="text" name="username" required style="width: 100%; padding: 10px; margin: 10px 0;">
 
-<form method="POST">
-    <label for="name">Họ tên:</label>
-    <input type="text" name="name" id="name" required>
+            <label>Mật khẩu:</label>
+            <input type="password" name="password" required style="width: 100%; padding: 10px; margin: 10px 0;">
 
-    <label for="email">Email:</label>
-    <input type="email" name="email" id="email" required>
+            <label>Họ và tên:</label>
+            <input type="text" name="full_name" required style="width: 100%; padding: 10px; margin: 10px 0;">
 
-    <label for="username">Tên đăng nhập:</label>
-    <input type="text" name="username" id="username" required>
+            <label>Email:</label>
+            <input type="email" name="email" required style="width: 100%; padding: 10px; margin: 10px 0;">
 
-    <label for="password">Mật khẩu:</label>
-    <input type="password" name="password" id="password" required>
+            <label>Quyền:</label>
+            <select name="role" style="width: 100%; padding: 10px; margin: 10px 0;">
+                <option value="customer">Khách hàng</option>
+                <option value="admin">Quản trị</option>
+            </select>
 
-    <button type="submit">Thêm người dùng</button>
-</form>
+            <label>Trạng thái:</label>
+            <select name="status" style="width: 100%; padding: 10px; margin: 10px 0;">
+                <option value="active">Kích hoạt</option>
+                <option value="inactive">Vô hiệu</option>
+            </select>
 
-<a href="manage_users.php" class="back-link">⬅ Quay lại danh sách người dùng</a>
-
+            <button type="submit"
+                style="padding: 10px 20px; background: #28a745; color: white; border: none; border-radius: 5px;">✅ Thêm
+                người dùng</button>
+            <a href="manage_users.php"
+                style="margin-left: 10px; padding: 10px 20px; background: #ccc; text-decoration: none; border-radius: 5px;">⬅
+                Quay lại</a>
+        </form>
+    </div>
 </body>
+
 </html>
