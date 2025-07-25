@@ -1,82 +1,73 @@
 <?php
-require_once 'includes/db.php'; // Nhúng file kết nối CSDL và khởi tạo session (session_start() có trong db.php)
-require_once 'includes/header.php'; // Nhúng header của trang
+session_start();
+require_once 'includes/db.php';
 
-// Kiểm tra xem người dùng đã đăng nhập chưa.
-// Nếu đã đăng nhập (có user_id trong session), chuyển hướng về trang chủ để tránh truy cập lại trang đăng nhập.
-if (isset($_SESSION['user_id'])) {
-    header("Location: index.php");
-    exit(); // Dừng thực thi script sau khi chuyển hướng
-}
+$error = '';
 
-// Xử lý khi form đăng nhập được gửi đi (phương thức POST)
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Lấy tên đăng nhập và mật khẩu từ form, loại bỏ khoảng trắng thừa
-    $username = trim($_POST['username'] ?? '');
-    $password = $_POST['password'] ?? ''; // Mật khẩu không nên trim vì có thể chứa khoảng trắng có chủ đích
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $username = trim($_POST['username']);
+    $password = $_POST['password'];
 
-    // Chuẩn bị câu lệnh SQL để tìm người dùng theo tên đăng nhập
-    // Sử dụng Prepared Statement để ngăn chặn SQL Injection
-    $stmt = $conn->prepare("SELECT id, username, password, role, full_name FROM users WHERE username = ?");
-    $stmt->bind_param("s", $username); // 's' nghĩa là tham số là kiểu string
-    $stmt->execute();                  // Thực thi câu lệnh
-    $result = $stmt->get_result();     // Lấy kết quả trả về
+    $stmt = $conn->prepare("SELECT * FROM users WHERE username = ?");
+    $stmt->bind_param("s", $username);
+    $stmt->execute();
+    $res = $stmt->get_result();
 
-    // Kiểm tra xem có tìm thấy người dùng nào không
-    if ($result->num_rows > 0) {
-        $user = $result->fetch_assoc(); // Lấy dữ liệu người dùng dưới dạng mảng kết hợp
-
-        // Xác minh mật khẩu:
-        // password_verify() là hàm chuẩn của PHP để so sánh mật khẩu người dùng nhập vào
-        // với mật khẩu đã được mã hóa (hash) lưu trong CSDL.
+    if ($res->num_rows === 1) {
+        $user = $res->fetch_assoc();
         if (password_verify($password, $user['password'])) {
-            // Đăng nhập thành công: Lưu thông tin người dùng vào session
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['username'] = $user['username'];
+            $_SESSION['full_name'] = $user['full_name'];
             $_SESSION['role'] = $user['role'];
-            $_SESSION['full_name'] = $user['full_name'] ?? $user['username']; // Lưu tên đầy đủ (nếu có), nếu không dùng username
 
-            // Đặt thông báo thành công vào session để hiển thị trên trang chủ
-            $_SESSION['message'] = ['type' => 'success', 'text' => 'Đăng nhập thành công! Chào mừng ' . htmlspecialchars($_SESSION['full_name']) . '.'];
-
-            // Chuyển hướng người dùng về trang chủ
-            header("Location: index.php");
+            header("Location: " . ($user['role'] === 'admin' ? "admin/manage_products.php" : "index.php"));
             exit();
         } else {
-            // Mật khẩu không đúng: Đặt thông báo lỗi vào session
-            $_SESSION['message'] = ['type' => 'error', 'text' => 'Tên đăng nhập hoặc mật khẩu không đúng.'];
-            header("Location: login.php"); // Tải lại trang với thông báo lỗi
-            exit();
+            $error = "Mật khẩu không đúng.";
         }
     } else {
-        // Không tìm thấy người dùng: Đặt thông báo lỗi vào session
-        $_SESSION['message'] = ['type' => 'error', 'text' => 'Tên đăng nhập hoặc mật khẩu không đúng.'];
-        header("Location: login.php"); // Tải lại trang với thông báo lỗi
-        exit();
+        $error = "Tài khoản không tồn tại.";
     }
-    $stmt->close(); // Đóng statement
 }
 ?>
 
-<div class="form-container">
-    <h2>Đăng nhập</h2>
-    <form action="login.php" method="POST">
-        <div class="form-group">
-            <label for="username">Tên đăng nhập:</label>
-            <input type="text" id="username" name="username" required>
-        </div>
-        <div class="form-group">
-            <label for="password">Mật khẩu:</label>
-            <input type="password" id="password" name="password" required>
-        </div>
-        <div class="form-group">
-            <button type="submit">Đăng nhập</button>
-        </div>
-        <p style="text-align: center;">Chưa có tài khoản? <a href="register.php">Đăng ký ngay</a></p>
-    </form>
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Đăng nhập - Jira WebBDT</title>
+</head>
+<body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8f9fa; margin: 0; padding: 0;">
+
+<div style="display: flex; justify-content: center; align-items: center; min-height: 100vh;">
+    <div style="background-color: white; padding: 40px; border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); width: 100%; max-width: 400px;">
+        <h2 style="text-align: center; margin-bottom: 25px; color: #343a40;">🔐 Đăng nhập tài khoản</h2>
+
+        <?php if ($error): ?>
+            <div style="background-color: #f8d7da; color: #721c24; padding: 10px 15px; border-radius: 5px; margin-bottom: 20px;">
+                <?php echo htmlspecialchars($error); ?>
+            </div>
+        <?php endif; ?>
+
+        <form method="post">
+            <label for="username" style="font-weight: bold;">Tên đăng nhập:</label>
+            <input type="text" id="username" name="username" required
+                   style="width: 100%; padding: 10px; margin: 8px 0 16px; border: 1px solid #ccc; border-radius: 5px;">
+
+            <label for="password" style="font-weight: bold;">Mật khẩu:</label>
+            <input type="password" id="password" name="password" required
+                   style="width: 100%; padding: 10px; margin: 8px 0 20px; border: 1px solid #ccc; border-radius: 5px;">
+
+            <button type="submit"
+                    style="width: 100%; padding: 12px; background-color: #007bff; color: white; border: none; border-radius: 5px; font-weight: bold; cursor: pointer;">
+                Đăng nhập
+            </button>
+        </form>
+
+        <p style="text-align: center; margin-top: 20px; font-size: 14px;">Chưa có tài khoản? <a href="register.php" style="color: #007bff;">Đăng ký ngay</a></p>
+    </div>
 </div>
 
-<?php
-require_once 'includes/footer.php'; // Nhúng footer của trang
-$conn->close(); // Đóng kết nối CSDL
-?>
+</body>
+</html>

@@ -23,24 +23,35 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
 // (Code này được thiết kế để hiển thị thông báo ngay sau thẻ <div class="container"> trong main)
 ?>
 
-<p>Chào mừng Admin, <strong><?php echo htmlspecialchars($_SESSION['full_name'] ?? $_SESSION['username']); ?></strong>!</p>
+<p>Chào mừng Admin, <strong><?php echo htmlspecialchars($_SESSION['full_name'] ?? $_SESSION['username']); ?></strong>!
+</p>
 <div class="admin-nav" style="margin-top: 30px;">
     <h3>Các chức năng quản lý:</h3>
     <ul style="list-style: none; padding: 0; text-align: left;">
         <li style="margin-bottom: 10px;">
-            <a href="add_product.php" style="display: block; padding: 10px 15px; background-color: #f2f2f2; border-left: 5px solid #007bff; text-decoration: none; color: #343a40; transition: background-color 0.2s ease, border-color 0.2s ease;">Thêm Sản Phẩm Mới</a>
+            <a href="add_product.php"
+                style="display: block; padding: 10px 15px; background-color: #f2f2f2; border-left: 5px solid #007bff; text-decoration: none; color: #343a40; transition: background-color 0.2s ease, border-color 0.2s ease;">Thêm
+                Sản Phẩm Mới</a>
         </li>
         <li style="margin-bottom: 10px;">
-            <a href="manage_products.php" style="display: block; padding: 10px 15px; background-color: #f2f2f2; border-left: 5px solid #007bff; text-decoration: none; color: #343a40; transition: background-color 0.2s ease, border-color 0.2s ease;">Quản Lý Sản Phẩm (Chưa phát triển)</a>
+            <a href="manage_products.php"
+                style="display: block; padding: 10px 15px; background-color: #f2f2f2; border-left: 5px solid #007bff; text-decoration: none; color: #343a40; transition: background-color 0.2s ease, border-color 0.2s ease;">Quản
+                Lý Sản Phẩm </a>
         </li>
         <li style="margin-bottom: 10px;">
-            <a href="manage_orders.php" style="display: block; padding: 10px 15px; background-color: #f2f2f2; border-left: 5px solid #007bff; text-decoration: none; color: #343a40; transition: background-color 0.2s ease, border-color 0.2s ease;">Quản Lý Đơn Hàng</a>
+            <a href="manage_orders.php"
+                style="display: block; padding: 10px 15px; background-color: #f2f2f2; border-left: 5px solid #007bff; text-decoration: none; color: #343a40; transition: background-color 0.2s ease, border-color 0.2s ease;">Quản
+                Lý Đơn Hàng</a>
         </li>
         <li style="margin-bottom: 10px;">
-            <a href="manage_users.php" style="display: block; padding: 10px 15px; background-color: #f2f2f2; border-left: 5px solid #007bff; text-decoration: none; color: #343a40; transition: background-color 0.2s ease, border-color 0.2s ease;">Quản Lý Người Dùng (Chưa phát triển)</a>
+            <a href="manage_users.php"
+                style="display: block; padding: 10px 15px; background-color: #f2f2f2; border-left: 5px solid #007bff; text-decoration: none; color: #343a40; transition: background-color 0.2s ease, border-color 0.2s ease;">Quản
+                Lý Người Dùng </a>
         </li>
         <li style="margin-bottom: 10px;">
-            <a href="../logout.php" style="display: block; padding: 10px 15px; background-color: #f2f2f2; border-left: 5px solid #dc3545; text-decoration: none; color: #343a40; transition: background-color 0.2s ease, border-color 0.2s ease;">Đăng Xuất</a>
+            <a href="../logout.php"
+                style="display: block; padding: 10px 15px; background-color: #f2f2f2; border-left: 5px solid #dc3545; text-decoration: none; color: #343a40; transition: background-color 0.2s ease, border-color 0.2s ease;">Đăng
+                Xuất</a>
         </li>
     </ul>
 </div>
