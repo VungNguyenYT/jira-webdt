@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th7 22, 2025 lúc 11:59 AM
+-- Thời gian đã tạo: Th7 25, 2025 lúc 07:42 AM
 -- Phiên bản máy phục vụ: 10.4.27-MariaDB
 -- Phiên bản PHP: 7.4.33
 
@@ -136,6 +136,13 @@ CREATE TABLE `orders` (
   `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Đang đổ dữ liệu cho bảng `orders`
+--
+
+INSERT INTO `orders` (`id`, `user_id`, `customer_name`, `customer_email`, `customer_phone`, `shipping_address`, `total_amount`, `order_status`, `payment_method`, `payment_status`, `created_at`, `updated_at`) VALUES
+(1, NULL, 'Nguyễn Văn Vửng', NULL, '0347482012', 'Trà Vinh', '30990000.00', 'shipped', 'cod', 'pending', '2025-07-22 19:56:34', '2025-07-25 12:00:53');
+
 -- --------------------------------------------------------
 
 --
@@ -149,6 +156,13 @@ CREATE TABLE `order_items` (
   `quantity` int(11) NOT NULL,
   `price_at_order` decimal(10,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `order_items`
+--
+
+INSERT INTO `order_items` (`id`, `order_id`, `product_id`, `quantity`, `price_at_order`) VALUES
+(1, 1, 1, 1, '30990000.00');
 
 -- --------------------------------------------------------
 
@@ -185,7 +199,8 @@ INSERT INTO `products` (`id`, `name`, `slug`, `category_id`, `brand_id`, `short_
 (5, 'Samsung Galaxy A55', 'samsung-galaxy-a55', 2, 2, 'Điện thoại tầm trung của Samsung với thiết kế đẹp và pin trâu.', 'Chi tiết về Galaxy A55, màn hình, camera, thời lượng pin...', '9990000.00', '9200000.00', 80, 'https://example.com/galaxya55.jpg', 'active', '2025-07-08 00:55:03', '2025-07-08 00:55:03'),
 (6, 'Xiaomi Redmi Note 13 Pro', 'xiaomi-redmi-note-13-pro', 3, 3, 'Điện thoại tầm trung đáng giá của Xiaomi với màn hình AMOLED.', 'Chi tiết về Redmi Note 13 Pro, hiệu năng, màn hình, sạc nhanh...', '6990000.00', '6500000.00', 90, 'https://example.com/redminote13pro.jpg', 'active', '2025-07-08 00:55:03', '2025-07-08 00:55:03'),
 (7, 'iPhone SE 2022', 'iphone-se-2022', 1, 1, 'iPhone nhỏ gọn với chip A15 Bionic mạnh mẽ.', 'Chi tiết về iPhone SE 2022, kích thước, hiệu năng, giá cả...', '10990000.00', NULL, 60, 'https://example.com/iphonese2022.jpg', 'active', '2025-07-08 00:55:03', '2025-07-08 00:55:03'),
-(8, 'Realme 3 Pro', 'realme-3-pro', 3, 3, 'test', 'test', '99999999.99', '99999999.99', 3, 'uploads/686c1eaae6daf-Apple-iPhone-15-Pro-lineup-hero-230912.jpg.news_app_ed.jpg', 'active', '2025-07-08 02:23:22', '2025-07-08 02:23:22');
+(8, 'Realme 3 Pro', 'realme-3-pro', 3, 3, 'test', 'test', '99999999.99', '99999999.99', 3, 'uploads/686c1eaae6daf-Apple-iPhone-15-Pro-lineup-hero-230912.jpg.news_app_ed.jpg', 'active', '2025-07-08 02:23:22', '2025-07-08 02:23:22'),
+(9, 'Điện thoại Samsung Galaxy A26 5G 6GB/128G', 'i-n-tho-i-samsung-galaxy-a26-5g-6gb-128g', 2, 2, '', 'Cấu hình & Bộ nhớ\r\nHệ điều hành: Android 15\r\nChip xử lý (CPU): Exynos 1380 8 nhân\r\nTốc độ CPU: 4 nhân 2.4 GHz & 4 nhân 2 GHz\r\nChip đồ họa (GPU): Mali-G68\r\nRAM: 6 GB\r\nDung lượng lưu trữ: 128 GB\r\nDung lượng còn lại (khả dụng) khoảng: 106.5 GB\r\nThẻ nhớ: MicroSD, hỗ trợ tối đa 2 TB\r\nDanh bạ: Không giới hạn', '6470000.00', '5670000.00', 99, 'uploads/6883179b959ea-samsung-galaxy-a26-6gb-128gb638827524374111984.jpg', 'active', '2025-07-25 12:35:23', '2025-07-25 12:35:23');
 
 -- --------------------------------------------------------
 
@@ -260,8 +275,7 @@ INSERT INTO `users` (`id`, `username`, `password`, `email`, `full_name`, `phone_
 (2, 'nguyenvanhieu', '$2y$10$wTf2tQxWf.q2H4D0F8L.UOu.V/xZ6d5hJ7B8I9K0L1M2N3O4P5Q6R7S8T9U0V1W2X3Y4Z5', 'hieu.nv@example.com', 'Nguyễn Văn Hiếu', '0912345678', '456 Đường XYZ, Quận 3, TP.HCM', 'customer', '2025-07-08 00:55:03', '2025-07-08 00:55:03'),
 (3, 'phamthihuong', '$2y$10$wTf2tQxWf.q2H4D0F8L.UOu.V/xZ6d5hJ7B8I9K0L1M2N3O4P5Q6R7S8T9U0V1W2X3Y4Z5', 'huong.pt@example.com', 'Phạm Thị Hương', '0987654321', '789 Lê Lợi, Quận 5, TP.HCM', 'customer', '2025-07-08 00:55:03', '2025-07-08 00:55:03'),
 (4, 'admin', '$2y$10$sjO04dzkJIDhd83txf.zDOavKSAJMNh6WDSdhTxowAKMeg1JjlYiW', '123@gmail.com', 'admin', '123456', '123a', 'admin', '2025-07-08 02:16:41', '2025-07-08 02:18:35'),
-(5, 'VungNguyenYT', '$2y$10$v2MsIFf.9vBxOWZ6IOIhy.lxSVxgSz/n8FVg94sNkT3YQ79ubRrFG', 'nguyenvanvung252@gmail.com', 'Nguyễn Văn Vửng', '0347482012', 'Ấp Phú lân, Song Lộc, Châu Thành, Trà Vinh', 'admin', '2025-07-22 14:44:43', '2025-07-22 14:45:37'),
-(6, 'Vung1', '$2y$10$7AzTDLu/z7C85CB3dg9n0e3vf9pAXepNoUPGLDdmcZ3924Uxp8W8G', 'aaa@gmail.com', 'Nguyễn Văn Zửng', '0347482012', 'Trà Vinh', 'customer', '2025-07-22 16:55:51', '2025-07-22 16:55:51');
+(5, 'VungNguyenYT', '$2y$10$v2MsIFf.9vBxOWZ6IOIhy.lxSVxgSz/n8FVg94sNkT3YQ79ubRrFG', 'nguyenvanvung252@gmail.com', 'Nguyễn Văn Vửng', '0347482012', 'Ấp Phú lân, Song Lộc, Châu Thành, Trà Vinh', 'admin', '2025-07-22 14:44:43', '2025-07-22 14:45:37');
 
 -- --------------------------------------------------------
 
@@ -415,19 +429,19 @@ ALTER TABLE `coupons`
 -- AUTO_INCREMENT cho bảng `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT cho bảng `order_items`
 --
 ALTER TABLE `order_items`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT cho bảng `products`
 --
 ALTER TABLE `products`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT cho bảng `product_images`
@@ -451,7 +465,7 @@ ALTER TABLE `reviews`
 -- AUTO_INCREMENT cho bảng `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- Các ràng buộc cho các bảng đã đổ
