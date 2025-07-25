@@ -1,107 +1,139 @@
 <?php
-require_once '../includes/db.php';     // Nhúng file kết nối CSDL và khởi tạo session
-require_once '../includes/header.php'; // Nhúng header của trang
+session_start();
+require_once '../includes/db.php';
 
 // Kiểm tra quyền admin
-// Điều này đảm bảo chỉ người dùng có vai trò 'admin' mới có thể truy cập trang này.
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
-    // Đặt thông báo lỗi và chuyển hướng về trang đăng nhập nếu không có quyền
-    $_SESSION['message'] = ['type' => 'error', 'text' => 'Bạn không có quyền truy cập trang này. Vui lòng đăng nhập với tài khoản quản trị.'];
+    $_SESSION['message'] = ['type' => 'error', 'text' => 'Bạn không có quyền truy cập trang này.'];
     header("Location: ../login.php");
     exit();
 }
 
-// Xử lý cập nhật trạng thái đơn hàng khi form được gửi đi (POST request)
+// Cập nhật trạng thái đơn hàng nếu có POST
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['order_id']) && isset($_POST['new_status'])) {
-    $order_id = intval($_POST['order_id']); // Lấy ID đơn hàng và đảm bảo là số nguyên
-    $new_status = $_POST['new_status'];      // Lấy trạng thái mới
-
-    // Danh sách các trạng thái hợp lệ để tránh dữ liệu không mong muốn
+    $order_id = intval($_POST['order_id']);
+    $new_status = $_POST['new_status'];
     $valid_statuses = ['pending', 'processing', 'shipped', 'delivered', 'cancelled'];
 
-    // Kiểm tra xem trạng thái mới có hợp lệ không
     if (in_array($new_status, $valid_statuses)) {
-        // Chuẩn bị câu lệnh SQL để cập nhật trạng thái đơn hàng
         $stmt = $conn->prepare("UPDATE orders SET order_status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?");
-        $stmt->bind_param("si", $new_status, $order_id); // 's' cho string, 'i' cho integer
-
-        // Thực thi câu lệnh
+        $stmt->bind_param("si", $new_status, $order_id);
         if ($stmt->execute()) {
-            $_SESSION['message'] = ['type' => 'success', 'text' => 'Trạng thái đơn hàng #' . $order_id . ' đã được cập nhật thành công.'];
+            $_SESSION['message'] = ['type' => 'success', 'text' => "Cập nhật đơn hàng #$order_id thành công."];
         } else {
-            $_SESSION['message'] = ['type' => 'error', 'text' => 'Lỗi khi cập nhật trạng thái đơn hàng: ' . $stmt->error];
+            $_SESSION['message'] = ['type' => 'error', 'text' => "Lỗi: " . $stmt->error];
         }
-        $stmt->close(); // Đóng statement
-
-        // Chuyển hướng về chính trang này sau khi cập nhật để làm mới dữ liệu và hiển thị thông báo
-        header("Location: manage_orders.php");
-        exit();
+        $stmt->close();
     } else {
-        // Nếu trạng thái không hợp lệ
-        $_SESSION['message'] = ['type' => 'error', 'text' => 'Trạng thái không hợp lệ được chọn.'];
-        header("Location: manage_orders.php");
-        exit();
+        $_SESSION['message'] = ['type' => 'error', 'text' => "Trạng thái không hợp lệ."];
     }
+    header("Location: manage_orders.php");
+    exit();
 }
 
-// Lấy danh sách tất cả các đơn hàng từ CSDL để hiển thị
-// Sắp xếp theo ngày tạo giảm dần (đơn hàng mới nhất lên đầu)
-$sql_orders = "SELECT id, customer_name, total_amount, order_status, payment_method, payment_status, created_at FROM orders ORDER BY created_at DESC";
-$result_orders = $conn->query($sql_orders);
-
+// Lấy danh sách đơn hàng
+$result_orders = $conn->query("SELECT id, customer_name, total_amount, order_status, payment_method, payment_status, created_at FROM orders ORDER BY created_at DESC");
 ?>
 
-<h2>Quản Lý Đơn Hàng</h2>
+<!DOCTYPE html>
+<html lang="vi">
 
-<?php
-// Thông báo (success/error) sẽ được hiển thị bởi display_message() trong header.php
-?>
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý đơn hàng</title>
+</head>
 
-<?php if ($result_orders->num_rows > 0): // Kiểm tra xem có đơn hàng nào để hiển thị không ?>
-    <table>
-        <thead>
-            <tr>
-                <th>Mã Đơn hàng</th>
-                <th>Khách hàng</th>
-                <th>Tổng tiền</th>
-                <th>Trạng thái ĐH</th>
-                <th>Thanh toán</th>
-                <th>Ngày đặt</th>
-                <th>Thao tác</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php while ($order = $result_orders->fetch_assoc()): // Duyệt qua từng đơn hàng ?>
-            <tr>
-                <td><?php echo htmlspecialchars($order['id']); ?></td>
-                <td><?php echo htmlspecialchars($order['customer_name']); ?></td>
-                <td><?php echo number_format($order['total_amount'], 0, ',', '.'); ?>đ</td>
-                <td>
-                    <form action="manage_orders.php" method="POST" style="display: inline-block;">
-                        <input type="hidden" name="order_id" value="<?php echo $order['id']; ?>">
-                        <select name="new_status" onchange="this.form.submit()">
-                            <option value="pending" <?php echo ($order['order_status'] == 'pending') ? 'selected' : ''; ?>>Chờ xử lý</option>
-                            <option value="processing" <?php echo ($order['order_status'] == 'processing') ? 'selected' : ''; ?>>Đang xử lý</option>
-                            <option value="shipped" <?php echo ($order['order_status'] == 'shipped') ? 'selected' : ''; ?>>Đã vận chuyển</option>
-                            <option value="delivered" <?php echo ($order['order_status'] == 'delivered') ? 'selected' : ''; ?>>Đã giao hàng</option>
-                            <option value="cancelled" <?php echo ($order['order_status'] == 'cancelled') ? 'selected' : ''; ?>>Đã hủy</option>
-                        </select>
-                    </form>
-                </td>
-                <td><?php echo htmlspecialchars($order['payment_method']); ?> (<?php echo htmlspecialchars($order['payment_status']); ?>)</td>
-                <td><?php echo date('d/m/Y H:i', strtotime($order['created_at'])); ?></td>
-                <td>
-                    <a href="view_order_detail.php?id=<?php echo $order['id']; ?>" class="button" style="background-color: #17a2b8; padding: 5px 10px; font-size: 0.9em;">Xem chi tiết</a>
-                </td>
-            </tr>
-            <?php endwhile; ?>
-        </tbody>
-    </table>
-<?php else: ?>
-    <p>Chưa có đơn hàng nào.</p>
-<?php endif; ?>
+<body style="font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; background: #f8f9fa;">
 
-<?php
-require_once '../includes/footer.php'; // Nhúng footer của trang
-$conn->close(); // Đóng kết nối CSDL
-?>
+    <header style="background-color: #343a40; color: #fff; padding: 20px;">
+        <div style="width: 90%; max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between;">
+            <h1 style="margin: 0;"><a href="../index.php" style="color: white; text-decoration: none;">Jira WebBDT</a>
+            </h1>
+            <nav>
+                <a href="manage_products.php" style="color: white; margin-left: 20px;">Sản phẩm</a>
+                <a href="manage_users.php" style="color: white; margin-left: 20px;">Người dùng</a>
+                <a href="manage_orders.php" style="color: white; margin-left: 20px; font-weight: bold;">Đơn hàng</a>
+                <a href="../logout.php" style="color: white; margin-left: 20px;">Đăng xuất</a>
+            </nav>
+        </div>
+    </header>
+
+    <main style="padding: 40px 0; width: 90%; max-width: 1200px; margin: 0 auto;">
+
+        <h2 style="text-align: center;">📦 Quản lý đơn hàng</h2>
+
+        <?php if (isset($_SESSION['message'])): ?>
+            <div
+                style="margin-bottom: 20px; padding: 10px 15px; border-radius: 5px; background-color: <?= $_SESSION['message']['type'] === 'success' ? '#d4edda' : '#f8d7da'; ?>; color: <?= $_SESSION['message']['type'] === 'success' ? '#155724' : '#721c24'; ?>;">
+                <?= $_SESSION['message']['text']; ?>
+            </div>
+            <?php unset($_SESSION['message']); ?>
+        <?php endif; ?>
+
+        <?php if ($result_orders->num_rows > 0): ?>
+            <table
+                style="width: 100%; border-collapse: collapse; background-color: white; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
+                <thead style="background-color: #f1f1f1;">
+                    <tr>
+                        <th style="padding: 12px; border: 1px solid #ddd;">Mã ĐH</th>
+                        <th style="padding: 12px; border: 1px solid #ddd;">Khách hàng</th>
+                        <th style="padding: 12px; border: 1px solid #ddd;">Tổng tiền</th>
+                        <th style="padding: 12px; border: 1px solid #ddd;">Trạng thái</th>
+                        <th style="padding: 12px; border: 1px solid #ddd;">Thanh toán</th>
+                        <th style="padding: 12px; border: 1px solid #ddd;">Ngày đặt</th>
+                        <th style="padding: 12px; border: 1px solid #ddd;">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php while ($order = $result_orders->fetch_assoc()): ?>
+                        <tr style="text-align: center;">
+                            <td style="padding: 10px; border: 1px solid #ddd;"><?= $order['id'] ?></td>
+                            <td style="padding: 10px; border: 1px solid #ddd;"><?= htmlspecialchars($order['customer_name']) ?>
+                            </td>
+                            <td style="padding: 10px; border: 1px solid #ddd; color: green; font-weight: bold;">
+                                <?= number_format($order['total_amount'], 0, ',', '.') ?>₫</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">
+                                <form method="post" action="manage_orders.php" style="margin: 0;">
+                                    <input type="hidden" name="order_id" value="<?= $order['id'] ?>">
+                                    <select name="new_status" onchange="this.form.submit()" style="padding: 5px;">
+                                        <option value="pending" <?= $order['order_status'] == 'pending' ? 'selected' : '' ?>>Chờ xử
+                                            lý</option>
+                                        <option value="processing" <?= $order['order_status'] == 'processing' ? 'selected' : '' ?>>
+                                            Đang xử lý</option>
+                                        <option value="shipped" <?= $order['order_status'] == 'shipped' ? 'selected' : '' ?>>Đã vận
+                                            chuyển</option>
+                                        <option value="delivered" <?= $order['order_status'] == 'delivered' ? 'selected' : '' ?>>Đã
+                                            giao</option>
+                                        <option value="cancelled" <?= $order['order_status'] == 'cancelled' ? 'selected' : '' ?>>Đã
+                                            hủy</option>
+                                    </select>
+                                </form>
+                            </td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">
+                                <?= $order['payment_method'] ?> (<?= $order['payment_status'] ?>)
+                            </td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">
+                                <?= date('d/m/Y H:i', strtotime($order['created_at'])) ?></td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">
+                                <a href="view_order_detail.php?id=<?= $order['id'] ?>"
+                                    style="background-color: #17a2b8; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none;">Xem
+                                    chi tiết</a>
+                            </td>
+                        </tr>
+                    <?php endwhile; ?>
+                </tbody>
+            </table>
+        <?php else: ?>
+            <p style="text-align: center; margin-top: 30px;">Không có đơn hàng nào.</p>
+        <?php endif; ?>
+    </main>
+
+    <footer style="background-color: #343a40; color: white; text-align: center; padding: 20px 0;">
+        <p style="margin: 0;">© <?= date('Y') ?> Jira WebBDT</p>
+    </footer>
+
+</body>
+
+</html>
+
+<?php $conn->close(); ?>
